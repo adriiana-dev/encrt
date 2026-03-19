@@ -1,0 +1,21 @@
+{
+  "name": "encrt",
+  "version": "1.0.0",
+  "description": "Encurtador de URLs minimalista — Node.js, Express e PostgreSQL",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "nanoid": "^3.3.6",
+    "pg": "^8.11.3",
+    "qrcode": "^1.5.4"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}

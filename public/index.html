@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Encrt — Encurtador de Links</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+    :root {
+      --creme:         #f5f0e8;
+      --creme-escuro: #ede7d9;
+      --preto:         #1a1714;
+      --cinza-texto:  #6b6560;
+      --cinza-borda:  #d8d0c4;
+      --vermelho:     #c0392b;
+    }
+ 
+    body {
+      background: var(--creme);
+      color: var(--preto);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: fadeIn 0.8s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+ 
+    header {
+      width: 100%;
+      padding: 2rem;
+      display: flex;
+      justify-content: center;
+    }
+ 
+    .logo { display: flex; align-items: baseline; gap: 0.3rem; }
+    .logo-nome { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.4rem; }
+    .logo-ponto { width: 7px; height: 7px; background: var(--preto); border-radius: 50%; }
+ 
+    .hero {
+      text-align: center;
+      padding: 4rem 1.5rem 2rem;
+    }
+ 
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.5rem, 8vw, 4rem);
+      margin-bottom: 1rem;
+      letter-spacing: -0.02em;
+    }
+ 
+    .hero p { font-size: 0.9rem; color: var(--cinza-texto); }
+ 
+    main {
+      width: 100%;
+      max-width: 500px;
+      padding: 2rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+ 
+    .label-campo {
+      display: block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: var(--cinza-texto);
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+ 
+    .campo-url {
+      width: 100%;
+      background: #fff;
+      border: 1.5px solid var(--cinza-borda);
+      border-radius: 12px;
+      padding: 1rem;
+      font-size: 1rem;
+      outline: none;
+      transition: all 0.2s;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+ 
+    .campo-url:focus { border-color: var(--preto); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+ 
+    .botao-encurtar {
+      width: 100%;
+      background: var(--preto);
+      color: var(--creme);
+      border: none;
+      border-radius: 12px;
+      padding: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .botao-encurtar:active { transform: scale(0.98); }
+
+    .caixa-resultado {
+      display: none;
+      background: #fff;
+      border-radius: 15px;
+      padding: 1.5rem;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.03);
+    }
+    .caixa-resultado.visivel { display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+
+    .qr-code-img {
+      width: 150px;
+      height: 150px;
+      margin: 1rem 0;
+      border: 1px solid var(--creme-escuro);
+      padding: 5px;
+    }
+ 
+    .resultado-link {
+      font-weight: 600;
+      color: var(--preto);
+      text-decoration: none;
+      font-size: 1.1rem;
+    }
+
+    .divisor-invisivel { margin: 2rem 0; text-align: center; color: var(--cinza-borda); font-size: 0.8rem; letter-spacing: 0.1em; }
+
+  
+    .item-url {
+      background: #fff;
+      border-radius: 12px;
+      padding: 1.2rem;
+      margin-bottom: 1rem;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    }
+
+    .item-info { display: flex; flex-direction: column; gap: 0.3rem; overflow: hidden; }
+    .item-link-curto { font-weight: 600; color: var(--preto); text-decoration: none; font-size: 0.95rem; }
+    .item-link-original { font-size: 0.75rem; color: var(--cinza-texto); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px; }
+
+    .btn-deletar { background: transparent; border: none; color: #d1cfcd; cursor: pointer; padding: 5px; transition: color 0.2s; font-size: 1.1rem; }
+    .btn-deletar:hover { color: var(--vermelho); }
+
+    footer { margin-top: auto; padding: 2rem; font-size: 0.7rem; color: var(--cinza-texto); text-align: center; }
+  </style>
+</head>
+<body>
+ 
+<header>
+  <div class="logo">
+    <span class="logo-nome">Encrt</span>
+    <div class="logo-ponto"></div>
+  </div>
+</header>
+ 
+<div class="hero">
+  <h1>Cole o longo,<br>receba o <em>curto.</em></h1>
+  <p>Minimalista · Seguro · QR Code</p>
+</div>
+ 
+<main>
+  <div class="input-group">
+    <label class="label-campo">Sua URL</label>
+    <input type="url" id="campo-url" class="campo-url" placeholder="https://link-longo.com" />
+    <button class="botao-encurtar" onclick="encurtarUrl()">Gerar Link e QR Code →</button>
+  </div>
+  
+  <div class="caixa-resultado" id="caixa-resultado">
+    <p class="label-campo">Link pronto</p>
+    <a class="resultado-link" id="resultado-link" href="#" target="_blank"></a>
+    <img src="" id="qr-img" class="qr-code-img" alt="QR Code" style="display:none;">
+    <button id="botao-copiar" onclick="copiarLink()" style="background: var(--creme-escuro); border: none; padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: 500; cursor: pointer;">Copiar URL</button>
+  </div>
+
+  <div class="divisor-invisivel">HISTÓRICO RECENTE</div>
+  <div id="lista-urls"></div>
+</main>
+ 
+<footer>
+  Encrt · PostgreSQL + Node.js
+</footer>
+ 
+<script>
+  let urlAtual = "";
+  const STORAGE_KEY = "meus_links_encrt";
+
+  // Inicia carregando o histórico do navegador
+  document.addEventListener("DOMContentLoaded", renderizarHistorico);
+
+  async function encurtarUrl() {
+    const campo = document.getElementById("campo-url");
+    const urlOriginal = campo.value.trim();
+    if(!urlOriginal) return;
+
+    try {
+      const response = await fetch("/api/urls", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ urlOriginal })
+      });
+      const data = await response.json();
+
+      if(response.ok) {
+        urlAtual = data.urlCurta;
+        exibirResultado(data.urlCurta);
+        salvarNoHistorico(data.urlCurta, urlOriginal);
+        campo.value = "";
+      }
+    } catch (e) { 
+      console.log("Erro ao conectar com o servidor"); 
+    }
+  }
+
+  function exibirResultado(url) {
+    const caixa = document.getElementById("caixa-resultado");
+    const link = document.getElementById("resultado-link");
+    const qrImg = document.getElementById("qr-img");
+
+    caixa.className = "caixa-resultado visivel";
+    link.href = url;
+    link.textContent = url;
+    qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${url}`;
+    qrImg.style.display = "block";
+  }
+
+  
+  function salvarNoHistorico(curta, original) {
+    let historico = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    
+    // Adiciona o novo link no topo 
+    const novoItem = { curta, original, id: Date.now() };
+    historico.unshift(novoItem);
+    
+    // Mantém apenas os 10 últimos  
+    if(historico.length > 10) historico.pop();
+    
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(historico));
+    renderizarHistorico();
+  }
+
+  function renderizarHistorico() {
+    const container = document.getElementById("lista-urls");
+    const historico = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    
+    if(historico.length === 0) {
+      container.innerHTML = '<p style="text-align:center; color:#b5ad9f; font-size:0.8rem;">Nenhum link gerado ainda.</p>';
+      return;
+    }
+
+    container.innerHTML = historico.map(item => `
+      <div class="item-url">
+        <div class="item-info">
+          <a href="${item.curta}" target="_blank" class="item-link-curto">${item.curta}</a>
+          <span class="item-link-original">${item.original}</span>
+        </div>
+        <button class="btn-deletar" onclick="removerItem(${item.id})">✕</button>
+      </div>
+    `).join("");
+  }
+
+  function removerItem(id) {
+    let historico = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    historico = historico.filter(item => item.id !== id);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(historico));
+    renderizarHistorico();
+  }
+
+  async function copiarLink() {
+    await navigator.clipboard.writeText(urlAtual);
+    const btn = document.getElementById("botao-copiar");
+    btn.textContent = "Copiado!";
+    setTimeout(() => btn.textContent = "Copiar URL", 2000);
+  }
+</script>
+ 
+</body>
+</html>
