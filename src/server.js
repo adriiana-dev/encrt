@@ -17,8 +17,7 @@ servidor.use(express.static(path.join(__dirname, "../public")));
 // Rotas da API
 servidor.use("/api/urls", urlRotas);
  
-// Rota de redirecionamento — deve ficar depois das rotas da API
-// Ex: acessar http://localhost:3000/abc1234 redireciona para a URL original
+
 servidor.get("/:codigoCurto", redirecionarParaUrlOriginal);
  
 servidor.listen(PORTA, () => {
