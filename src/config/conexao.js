@@ -7,6 +7,7 @@ const conexao = new Pool({
   database: process.env.DB_NOME,
   user:     process.env.DB_USUARIO,
   password: process.env.DB_SENHA,
+  ssl:      { rejectUnauthorized: false }
 });
 
 conexao.query("SELECT 1").then(() => {
