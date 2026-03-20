@@ -6,9 +6,9 @@ Encurtador de URLs minimalista desenvolvido com **Node.js** e **PostgreSQL**. O 
 
 ## Tecnologias Utilizadas
 
-- **Backend:** Node.js & Express.js
+- **Backend:** Node.js e Express.js
 - **Banco de Dados:** PostgreSQL
-- **Frontend:** HTML5, CSS3 & JavaScript Puro
+- **Frontend:** HTML5, CSS3 e JavaScript
 - **Funcionalidades:** Geração de QR Code e Histórico via LocalStorage
 ---
 
